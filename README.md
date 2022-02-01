@@ -5,6 +5,6 @@ Progetto Tipologia b - Traccia 2
 Controllo satellite in orbita intorno alla Terra
 
 #### Partecipanti
-* Patrick di Fazio
+* Patrick Di Fazio
 * Lorenzo Venerandi
 * Giorgio Mastrotucci
