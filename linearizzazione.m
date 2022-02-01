@@ -11,7 +11,7 @@ kG=6.67e-11;
 M = 5.98e24;
 
 % intervallo di tempo
-interv = 0:0.1:100; % da 0 a 10 secondi con passo 0.1
+interv = 0:0.1:100; % da 0 a 100 secondi con passo 0.1
 
 % sistema
 f1=x2;
