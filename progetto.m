@@ -253,8 +253,8 @@ tt = (0:1e-2:1e3);
 
 % disturbo di uscita
 d=0;
-for k=1:4
-    d=d+sin(0.02*k*tt);
+for i=1:4
+    d=d+sin(0.02*i*tt);
 end
 d=3e-5*d;
 
@@ -272,8 +272,8 @@ figure(6);
 
 % disturbo di misura
 n=0;
-for k=1:4
-    n=n+sin(5e4*k*tt);
+for i=1:4
+    n=n+sin(5e4*i*tt);
 end
 n=2e-4*n;
 
