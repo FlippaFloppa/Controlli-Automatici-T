@@ -66,7 +66,7 @@ G = tf(N,D);
 
 % dimensione grafico
 bode_min=1e-10;
-bode_max=1e6;
+bode_max=1e8;
 
 figure(1);
 hold on;
@@ -103,6 +103,7 @@ mu_s=1e9; % guadagno regolatore statico
 Rs=mu_s/(s); % per soddisfare l'errore a regime è stato necessario
              % aggiungere un polo nell'origine
 G_e=G*Rs;
+
 %% Grafico le specifiche
 
 figure(2);
@@ -137,12 +138,20 @@ Bnd_err_x=[err_min;err_max;err_max;err_min];
 Bnd_err_y=[200;A_d;A_d;A_d];
 patch(Bnd_err_x, Bnd_err_y,'m','FaceAlpha',0.2,'EdgeAlpha',0);
 
+% fisica realizzabilità
+fis_min=1e6;
+fis_max=1e10;
+Bnd_fis_x=[fis_min,fis_max,fis_max,fis_max];
+Bnd_fis_y=[-A_n,-A_n,-A_n-200,-A_n-200];
+patch(Bnd_fis_x, Bnd_fis_y,'y','FaceAlpha',0.2,'EdgeAlpha',0);
+
 % Legenda colori
-Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞"; "G(j\omega)"];
+Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞";"dyson"; "G(j\omega)"];
 legend(Legend_mag);
 
 % Plot Bode con margini di stabilità
 margin(G_e,{bode_min,bode_max});
+title("Diagramma di Bode con regolatore Statico")
 grid on;
 zoom on;
 
@@ -161,7 +170,6 @@ patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 Legend_arg = ["G(j\omega)"; "M_f"];
 legend(Legend_arg);
 
-
 %% Sintesi Regolatore dinamico
 
 % Rete anticipatrice
@@ -178,6 +186,7 @@ phi_star = Mf_star - 180 - arg_omega_c_star;
 alpha_tau_a = (cos(phi_star*pi/180) - 1/M_star)/(omega_c_star_a*sin(phi_star*pi/180));
 tau_a = (M_star - cos(phi_star*pi/180))/(omega_c_star_a*sin(phi_star*pi/180));
 alpha_a = alpha_tau_a / tau_a;
+Rd_a=(1 + tau_a*s)/(1 + alpha_a*tau_a*s);
 
 check_flag = cos(phi_star*pi/180) - 1/M_star;
 if check_flag < 0
@@ -185,12 +194,8 @@ if check_flag < 0
     return;
 end
 
-% Rete ritardante
-tau_r=9e-3;
-alpha_r=0.7;
-
 % Regolatore dinamico
-Rd = (1 + tau_a*s)/((1 + alpha_a*tau_a*s))*((1+alpha_r*tau_r*s)/(1+tau_r*s));
+Rd = Rd_a;
 
 %% Diagramma di Bode con regolatore Statico e Dinamico
 
@@ -204,13 +209,78 @@ patch(Bnd_d_x, Bnd_d_y,'r','FaceAlpha',0.2,'EdgeAlpha',0);
 patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
 patch(Bnd_err_x, Bnd_err_y,'m','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_fis_x, Bnd_fis_y,'y','FaceAlpha',0.2,'EdgeAlpha',0);
 legend(Legend_mag);
 
 % Plot Bode con margini di stabilità
 margin(L,{bode_min,bode_max});
+title("Diagramma di Bode con regolatore Statico e Dinamico");
 grid on; zoom on;
 
 % Specifiche su fase
 patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 hold on;
 legend(Legend_arg);
+
+
+%% Definizione funzioni di sensitività
+R=Rd*Rs;
+
+S=1/(1+R*G); %Funzione di sensitività
+F=(R*G)/(1+R*G); %Funzione di sensitività complementare
+Q=R/(1+R*G); %Funzione di sensitività del controllo
+
+%% Risposta al gradino
+figure(4);
+% disturbo di ingresso
+W=8e-5; 
+
+T_simulation = 1;
+[y_step,t_step] = step(W*F, 1);
+plot(t_step,y_step,'b');
+title("Risposta al gradino");
+grid on, zoom on, hold on;
+
+Legend_step = ["Risposta al gradino"];
+legend(Legend_step);
+
+%% Check disturbo in uscita
+
+figure(5);
+
+% Simulazione disturbo a pulsazione 0.05
+tt = (0:1e-2:1e3);
+
+% disturbo di uscita
+d=0;
+for k=1:4
+    d=d+sin(0.02*k*tt);
+end
+d=3e-5*d;
+
+y_n = lsim(S,d,tt);
+hold on, grid on, zoom on
+plot(tt,d,'m')
+plot(tt,y_n,'b')
+title("Comportamento disturbo di uscita");
+grid on
+legend('d','y_d')
+
+%% Check disturbo di misura
+
+figure(6);
+
+% disturbo di misura
+n=0;
+for k=1:4
+    n=n+sin(5e4*k*tt);
+end
+n=2e-4*n;
+
+y_n = lsim(-F,n,tt);
+hold on, grid on, zoom on
+plot(tt,n,'m');
+plot(tt,y_n,'b');
+title("Comportamento disturbo di misura");
+grid on
+legend('n','y_n');
