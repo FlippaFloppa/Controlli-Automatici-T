@@ -1,7 +1,7 @@
 close all; clear all; clc;
 
 %% Definizioni
-syms x1 x2 x3 u N D
+syms x1 x2 x3 u N D t
 
 b1 = 0.3;
 b2 = 0.1;
@@ -21,7 +21,7 @@ y=x3;
 
 %% Calcolo coppia di equilibrio
 
-x1_e=3e7 % Posizione di equilibrio
+x1_e=3e7; % Posizione di equilibrio
 
 F = @(x) [x(2);
          -b1*x(2)/m + (k-1)*(kG*M/x1_e^2 -x1_e*x(3)^2);
@@ -29,9 +29,9 @@ F = @(x) [x(2);
 
 x=fsolve(F,double([0,0,0]));
 
-x2_e=x(1,2)
-x3_e=x(1,3)
-u_e=x(1,1)
+x2_e=x(1,2);
+x3_e=x(1,3);
+u_e=x(1,1);
 
 %{
 % Punti di equilibrio
@@ -60,9 +60,157 @@ D = double(subs(D,[x1,x2,x3,u],[x_e,u_e]));
 
 %% Trasformata di Laplace
 
-figure;
 s = tf('s');
 [N,D]=ss2tf(A,B,C,D);
 G = tf(N,D);
-bode(G);
-zpk(G)
+
+% dimensione grafico
+bode_min=1e-10;
+bode_max=1e6;
+
+figure(1);
+hold on;
+grid on;
+bode(G,{bode_min,bode_max});
+title("Funzione di trasferimento iniziale");
+hold off;
+
+%% Definizione parametri regolatore
+
+% ampiezze gradini
+WW = 8e-5;
+DD = 3e-5;
+
+% errore a regime
+e_star = 0.1;
+
+% attenuazione disturbo sull'uscita
+A_d = 45;
+omega_d_MAX = 8e-2;
+omega_d_min=1e-11;
+
+% attenuazione disturbo di misura
+A_n = 85;
+omega_n_min = 5e4;
+omega_n_MAX = 7.5e7;
+
+% Sovraelongazione massima e tempo d'assestamento al 5%
+S_100_spec = 0.01;
+T_a1_spec = 0.15;
+
+%% Sintesi Regolatore Statico
+mu_s=1e9; % guadagno regolatore statico
+Rs=mu_s/(s); % per soddisfare l'errore a regime è stato necessario
+             % aggiungere un polo nell'origine
+G_e=G*Rs;
+%% Grafico le specifiche
+
+figure(2);
+hold on;
+% Calcolo specifiche S% => Margine di fase
+xi = 0.83;
+S_100 = 100*exp(-pi*xi/sqrt(1-xi^2));
+Mf_spec = xi*100; % Mf_spec = 83
+Mf_real = 40;
+
+% Specifiche su d
+Bnd_d_x = [omega_d_min; omega_d_MAX; omega_d_MAX; omega_d_min];
+Bnd_d_y = [A_d; A_d; -1000; -1000];
+patch(Bnd_d_x, Bnd_d_y,'r','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Specifiche su n
+Bnd_n_x = [omega_n_min; omega_n_MAX; omega_n_MAX; omega_n_min];
+Bnd_n_y = [-A_n; -A_n; 500; 500];
+patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Specifiche tempo d'assestamento (minima pulsazione di taglio)
+omega_Ta_min = 1e-11; % lower bound per il plot
+omega_Ta_MAX = 460/(Mf_spec*T_a1_spec); % omega_c >= 460/(Mf*T^*) ~ 3.69
+Bnd_Ta_x = [omega_Ta_min; omega_Ta_MAX; omega_Ta_MAX; omega_Ta_min];
+Bnd_Ta_y = [0; 0; -1000; -1000];
+patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Errore a regime
+err_min=1e-11;
+err_max=1e-4;
+Bnd_err_x=[err_min;err_max;err_max;err_min];
+Bnd_err_y=[200;A_d;A_d;A_d];
+patch(Bnd_err_x, Bnd_err_y,'m','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Legenda colori
+Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞"; "G(j\omega)"];
+legend(Legend_mag);
+
+% Plot Bode con margini di stabilità
+margin(G_e,{bode_min,bode_max});
+grid on;
+zoom on;
+
+% Specifiche sovraelongazione (margine di fase)
+omega_c_min = omega_Ta_MAX;
+omega_c_MAX = omega_n_min;
+
+phi_spec = Mf_spec- 180;
+phi_low = -270; % lower bound per il plot
+
+Bnd_Mf_x = [omega_c_min; omega_c_MAX; omega_c_MAX; omega_c_min];
+Bnd_Mf_y = [phi_spec; phi_spec; phi_low; phi_low];
+patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+
+% Legenda colori
+Legend_arg = ["G(j\omega)"; "M_f"];
+legend(Legend_arg);
+
+
+%% Sintesi Regolatore dinamico
+
+% Rete anticipatrice
+Mf_star = Mf_spec; % Mf_star = 83
+omega_c_star_a=1e2;
+
+[mag_omega_c_star, arg_omega_c_star, ~] = bode(G_e, omega_c_star_a);
+mag_omega_c_star_db = 20*log10(mag_omega_c_star);
+
+M_star = 10^(-mag_omega_c_star_db/20);
+phi_star = Mf_star - 180 - arg_omega_c_star;
+
+% Formule di inversione
+alpha_tau_a = (cos(phi_star*pi/180) - 1/M_star)/(omega_c_star_a*sin(phi_star*pi/180));
+tau_a = (M_star - cos(phi_star*pi/180))/(omega_c_star_a*sin(phi_star*pi/180));
+alpha_a = alpha_tau_a / tau_a;
+
+check_flag = cos(phi_star*pi/180) - 1/M_star;
+if check_flag < 0
+    disp('Errore: alpha negativo');
+    return;
+end
+
+% Rete ritardante
+tau_r=9e-3;
+alpha_r=0.7;
+
+% Regolatore dinamico
+Rd = (1 + tau_a*s)/((1 + alpha_a*tau_a*s))*((1+alpha_r*tau_r*s)/(1+tau_r*s));
+
+%% Diagramma di Bode con regolatore Statico e Dinamico
+
+L=Rd*G_e;   % Funzione di anello
+
+figure(3);
+hold on;
+
+% Specifiche su ampiezza
+patch(Bnd_d_x, Bnd_d_y,'r','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
+patch(Bnd_err_x, Bnd_err_y,'m','FaceAlpha',0.2,'EdgeAlpha',0);
+legend(Legend_mag);
+
+% Plot Bode con margini di stabilità
+margin(L,{bode_min,bode_max});
+grid on; zoom on;
+
+% Specifiche su fase
+patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
+hold on;
+legend(Legend_arg);
