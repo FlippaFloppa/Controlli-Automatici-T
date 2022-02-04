@@ -222,42 +222,47 @@ patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 hold on;
 legend(Legend_arg);
 
-
 %% Definizione funzioni di sensitività
-R=Rd*Rs;
+R=Rd*Rs;    % Regolatore
 
-S=1/(1+R*G); %Funzione di sensitività
-F=(R*G)/(1+R*G); %Funzione di sensitività complementare
-Q=R/(1+R*G); %Funzione di sensitività del controllo
+S=1/(1+R*G); %  Funzione di sensitività
+F=(R*G)/(1+R*G); %  Funzione di sensitività complementare
+Q=R/(1+R*G); %  Funzione di sensitività del controllo
 
 %% Risposta al gradino
 figure(4);
 % disturbo di ingresso
 W=8e-5; 
-
 T_simulation = 1;
 [y_step,t_step] = step(W*F, 1);
-plot(t_step,y_step,'b');
-title("Risposta al gradino");
 grid on, zoom on, hold on;
 
-Legend_step = ["Risposta al gradino"];
+% vincolo sovraelongazione
+patch([0,T_simulation,T_simulation,0],[W*(1+S_100_spec),W*(1+S_100_spec),W+1,W+1],'r','FaceAlpha',0.3,'EdgeAlpha',0.5);
+ylim([0,W+1]);
+
+plot(t_step,y_step,'b');
+title("Risposta al gradino");
+ylim([0,W*1.2]);
+
+Legend_step = ["Vincolo sovraelongazione";"Risposta al gradino"];
 legend(Legend_step);
 
 %% Check disturbo in uscita
 
 figure(5);
 
-% Simulazione disturbo a pulsazione 0.05
+% Definizione intervallo
 tt = (0:1e-2:1e3);
 
-% disturbo di uscita
+% calcolo disturbo di uscita
 d=0;
 for i=1:4
     d=d+sin(0.02*i*tt);
 end
 d=3e-5*d;
 
+%plot
 y_n = lsim(S,d,tt);
 hold on, grid on, zoom on
 plot(tt,d,'m')
@@ -270,13 +275,14 @@ legend('d','y_d')
 
 figure(6);
 
-% disturbo di misura
+% calcolo disturbo di misura
 n=0;
 for i=1:4
     n=n+sin(5e4*i*tt);
 end
 n=2e-4*n;
 
+% plot
 y_n = lsim(-F,n,tt);
 hold on, grid on, zoom on
 plot(tt,n,'m');
