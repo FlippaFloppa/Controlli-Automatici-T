@@ -146,11 +146,12 @@ Bnd_fis_y=[-A_n,-A_n,-A_n-200,-A_n-200];
 patch(Bnd_fis_x, Bnd_fis_y,'y','FaceAlpha',0.2,'EdgeAlpha',0);
 
 % Legenda colori
-Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞";"dyson"; "G(j\omega)"];
+Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞";"fis. real.";"G_e(j\omega)"; "G(j\omega)"];
 legend(Legend_mag);
 
 % Plot Bode con margini di stabilità
 margin(G_e,{bode_min,bode_max});
+margin(G,{bode_min,bode_max});
 title("Diagramma di Bode con regolatore Statico")
 grid on;
 zoom on;
@@ -167,7 +168,7 @@ Bnd_Mf_y = [phi_spec; phi_spec; phi_low; phi_low];
 patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 
 % Legenda colori
-Legend_arg = ["G(j\omega)"; "M_f"];
+Legend_arg = ["G_e(j\omega)";"G(j\omega)"; "M_f"];
 legend(Legend_arg);
 
 %% Sintesi Regolatore dinamico
@@ -210,16 +211,19 @@ patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
 patch(Bnd_err_x, Bnd_err_y,'m','FaceAlpha',0.2,'EdgeAlpha',0);
 patch(Bnd_fis_x, Bnd_fis_y,'y','FaceAlpha',0.2,'EdgeAlpha',0);
+Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞";"fis. real.";"L(j\omega)"; "G_e(j\omega)"];
 legend(Legend_mag);
 
 % Plot Bode con margini di stabilità
 margin(L,{bode_min,bode_max});
+margin(G_e,{bode_min,bode_max});
 title("Diagramma di Bode con regolatore Statico e Dinamico");
 grid on; zoom on;
 
 % Specifiche su fase
 patch(Bnd_Mf_x, Bnd_Mf_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 hold on;
+Legend_arg = ["L(j\omega)";"G_e(j\omega)"; "M_f"];
 legend(Legend_arg);
 
 %% Definizione funzioni di sensitività
