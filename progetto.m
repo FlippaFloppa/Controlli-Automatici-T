@@ -80,6 +80,7 @@ hold off;
 % ampiezze gradini
 WW = 8e-5;
 DD = 3e-5;
+NN = 2e-4;
 
 % errore a regime
 e_star = 0.1;
@@ -264,7 +265,7 @@ d=0;
 for i=1:4
     d=d+sin(0.02*i*tt);
 end
-d=3e-5*d;
+d=DD*d;
 
 %plot
 y_n = lsim(S,d,tt);
@@ -284,7 +285,7 @@ n=0;
 for i=1:4
     n=n+sin(5e4*i*tt);
 end
-n=2e-4*n;
+n=NN*n;
 
 % plot
 y_n = lsim(-F,n,tt);
