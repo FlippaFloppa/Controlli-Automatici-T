@@ -1,0 +1,174 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[italian]{babel}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{gensymb}
+\usepackage{setspace}
+\setstretch{1.5}
+
+% Set page size and margins
+% Replace `letterpaper' with`a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{
+Controllo satellite in orbita intorno alla Terra\\
+  \large Progetto Tipologia b - Traccia 2 \\
+Controlli Automatici - T
+
+}
+
+\author{A cura di : Giorgio Mastrotucci, Lorenzo Venerandi e Patrick Di Fazio}
+\date{}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.3\textwidth]{Schermata 2022-02-04 alle 19.54.38.png}
+\caption{\label{fig:orbit}Schema illustrativo della dinamica del satellite}
+\end{figure}
+\end{abstract}
+
+\begin{center}
+\section*{Descrizione del problema}
+\end{center}
+Il progetto richiede di realizzare un sistema di controllo per un satellite in orbita attorno alla Terra.
+Avendo già fornito il primo controllore, le equazioni del sistema risultano:
+\[m \Ddot{\rho} = \beta_1\Dot{\rho} + m(k-1)+  (\frac{k_G M}{\rho^{2}} + \rho \omega^{2}) \]
+\[\Dot{\omega} = -\frac{2\omega \Dot{\rho} }{\rho} -
+\frac{\beta_2 \omega }{m}+ \frac{\tau}{m \rho} ,\]
+
+con $\tau(t)$ ingresso libero ed inoltre velocità angolare $\omega(t)$ misurabile.
+
+
+\begin{enumerate}
+\item Riportare il sistema nella forma di stato e linearizzazione.
+\item Calcolare la funzione di trasferimento da $\delta U$  a  $\delta Y$,  ovvero la funzione G(s) tale che  \begin{center} $\delta Y (s)$ = G(s) $\delta U (s)$ \end{center}
+\item Progettare il regolatore fisicamente realizzabile secondo determinate specifiche.
+\item Testare il sistema di controllo non linearizzato con :
+\[	\omega(t)=\num{8e-5} \cdot 1(t) , \ d(t)= \sum_{k=1}^4 \num{3e-5}\cdot sin(0.02kt) e \  n(t)= \sum_{k=1}^4 \num{3e-5}\cdot sin(\num{5e4}kt)\]
+\item Testare il sistema di controllo sul modello non lineare (ed in presenza di $d(t)$ ed $n(t)$).
+\end{enumerate}
+
+
+\begin{center}
+\begin{tabular}{||c | c ||} 
+
+ \hline\hline
+ $\beta_1$ & 0.3 \\ 
+ \hline
+ $\beta_2$& 0.1  \\
+ \hline
+ $m$ & 1 \\
+ \hline
+ $m$  & 1.5  \\
+ \hline
+ $\rho_e$  & 3\cdot 10^{7} \\ [2ex] 
+ \hline
+\end{tabular}
+\end{center}
+
+
+
+
+
+
+\section{Sistema in forma di stato e linearizzazione}\\
+\subsection{Forma di stato}\\
+Siano $x_1=\tau$ , $x_2=\Dot{\rho}$ , $x_3=\omega$ stati , $\upsilon=\tau$ ingresso e $y=x_3$ uscita del sistema.\\
+Riscriviamo le equazioni come sistema in forma di stato\\
+\begin{large}
+\begin{equation}
+\Dot{x}=
+\begin{bmatrix} \Dot{x_1} \\\Dot{x_2} \\ \Dot{x_3}\end{bmatrix} =
+\begin{bmatrix} f_1(x,u) \\ f_2(x,u) \\ f_3(x,u)\end{bmatrix} =
+\begin{bmatrix} \dot{x_2} \\
+-\frac{\beta_1 x_2}{m} + (k-1)(\frac{kG M}{x_1^2} - x_1 x_3^2) \\ 
+-2\frac{x_3 x_2}{x_1} - \frac{\beta_2 x_3}{m} + \frac{u}{m x_1}  \end{bmatrix}
+\end{equation}
+\end{large}
+
+\subsection{Coppia di equilibrio}\\
+Per rendere il sistema lineare è necessario calcolare i punti di equilibrio $x_e$ e $u_e$.\\
+Da specifica sappiamo che $x_1e=\rho_e$, quindi poniamo
+\begin{large}
+\begin{equation}
+\begin{bmatrix} f_1(x_e,u_e) \\ f_2(x_e,u_e) \\ f_3(x_e,u_e)\end{bmatrix} =
+\begin{bmatrix} \dot{x_2e} \\
+-\frac{\beta_1 x_2e}{m} + (k-1)(\frac{kG M}{x_1e^2} - x_1e x_3e^2) \\ 
+-2\frac{x_3e x_2e}{x_1e} - \frac{\beta_2 x_3e}{m} + \frac{u}{m x_1e}  \end{bmatrix} =
+\begin{bmatrix} 0 \\ 0 \\ 0\end{bmatrix}
+\end{equation}
+\end{large}
+Ricaviamo quindi la coppia di equilibrio:
+\begin{large}
+\begin{equation}
+x_e=\begin{bmatrix} x_1e \\ x_2e \\ x_3e\end{bmatrix}=
+\begin{bmatrix} 3\cdot10^7 \\ 0 \\ 1.215\cdot10^-4\end{bmatrix}
+\end{equation}
+\begin{equation}
+u_e=364.63
+\end{equation}
+\end{large}
+
+
+\subsection{Linearizzazione}
+
+
+
+
+
+
+
+
+
+
+\section{Funzione di trasferimento}
+Dal sistema linearizzato, passiamo a trovare la funzione di trasferimento: $\delta G(S)$ t.c. $\delta δY (s) = G(s)δU (s)$ e per farlo utilizziamo la trasformata di Laplace.
+
+
+
+\[
+G(S) = \frac{(3.3333\cdot 10^{-08}) (s+0.3) (s+7.386\cdot 10^{-08}))} {((s+0.3) (s+0.1) (s+2.462\cdot 10^{-08}))}
+\]
+
+\subsection{Bode}
+
+Successivamente rappresentiamo la funzione con il diagramma di Bode.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{plot1.png}
+\end{figure}
+
+\section{Il regolatore}
+
+Il regolatore richiesto deve rispettare dei vincoli e deve essere fisicamente realizzabile.
+\subsection{Regolatore Statico}
+
+Dato che $\ G(S)$ non ha un polo nell'origine, per rispettare l'errore a regime nullo, è necessario inserirne uno. Considerando il guadagno del regolatore statico come  $ \mu = 1 \cdot \num{e9}$, otteniamo:
+
+\[ Rs = \frac{\mu}{s}  \]
+
+
+Il sistema risultante con regolatore risulta:
+\[ G_e(S) = r(s)G(S) \]
+
+\subsection{Regolatore Dinamico}
+La parte dinamica del regolatore deve rispettare determinate specifiche: il margine di fase $ Mf \geq 40\degree $ per garantire un certo livello di robustezza del sistema regolato. 
+La sovraelongazione percentuale massima che il sistema può accettare è $ S \leq 1\% $. Il tempo di assestamento all' $ \epsilon\% $ deve essere inferiore a T_a,e=0,15s fissato.
+
+
+\section{Test del sistema di controllo sul modello lineare}
+
+
+\end{document}
