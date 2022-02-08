@@ -236,13 +236,10 @@ F=(R*G)/(1+R*G); %  Funzione di sensitività complementare
 Q=R/(1+R*G); %  Funzione di sensitività del controllo
 
 figure(10)
-hold on;
-legend(["S(j\omega)";"F(j\omega)"; "Q(j\omega)"]);
 margin(S,{bode_min,bode_max});
 margin(F,{bode_min,bode_max});
 margin(Q,{bode_min,bode_max});
-legend(["S(j\omega)";"F(j\omega)"; "Q(j\omega)"]);
-title("Funzioni di sensitività relative a L(j\omega)");
+legend(["F. di sensitività";"F. di sensitività"; "M_f"])
 
 %% Risposta al gradino
 figure(4);

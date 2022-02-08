@@ -6,7 +6,9 @@
 \usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{gensymb}
+\usepackage{xassoccnt}
 \usepackage{setspace}
+\usepackage{caption}
 \setstretch{1.5}
 
 % Set page size and margins
@@ -211,6 +213,7 @@ Successivamente rappresentiamo la funzione con il diagramma di Bode.
 \includegraphics[width=1\textwidth]{fig1.png}
 \caption{\label{fig:bode}Diagramma di Bode di $G(j\omega)$}
 \end{figure}
+\pagebreak
 
 \section{Il regolatore}
 La funzione di trasferimento in anello aperto è definita come:
@@ -292,16 +295,20 @@ L(j\omega)=G_e(s)R_d(s)=\frac{83628 (s+0.3309) (s+0.3) (s+7.386e-08)}{s (s+830.3
 \caption{\label{fig:orbit}Diagramma di Bode di $L(j\omega)$ con vincoli}
 \end{figure}\\
 Come si può notare dal grafico soprastante sono stati rispettati tutti i vincoli relativi a tempo di assestamento e margine di fase.
+\pagebreak
 
 \section{Test del sistema di controllo sul modello lineare}
+\SuspendCounters{subsection}
+\subsection{Sensitività funzione}
 
+\ResumeSuspendedCounters{subsection}
 \subsection{Risposta al gradino}
 Data una funzione gradino $w(t)=8\cdot10{^-5}\cdot1(t)$ la risposta del sistema in anello chiuso rispetta i vincoli del tempo di assestamento e dell'errore a regime, come si può notare dalla figura.
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{fig4.png}
 \caption{\label{fig:orbit}Risposta al gradino $w(t)$}
-\end{figure}\\
+\end{figure}
 
 \subsection{Disturbo di uscita}
 Il sistema riesce inoltre ad attenuare il disturbo di uscita $d(t)=\sum_{k=1}^4 3\cdot10^{-5}\cdot sin(0.02kt)$ quasi completamente (specifica 45 $dB$).
@@ -309,27 +316,80 @@ Il sistema riesce inoltre ad attenuare il disturbo di uscita $d(t)=\sum_{k=1}^4 
 \centering
 \includegraphics[width=1\textwidth]{fig5.png}
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
-\end{figure}\\
+\end{figure}
 
 \subsection{Disturbo di misura}
-Da specifica dobbiamo attenuare il disturbo di misura $n(t)=\sum_{k=1}^4 2\cdot10^{-4}\cdot sin(5\cdot 10^4kt)$. Inizialmente abbiamo plottato il grafico con una frequenza di campionamento di 20 $Hz$ e il disturbo risulta poco attenuato, come si nota dal grafico
+Da specifica dobbiamo attenuare il disturbo di misura $n(t)=\sum_{k=1}^4 2\cdot10^{-4}\cdot sin(5\cdot 10^4kt)$. Inizialmente abbiamo plottato il grafico con una frequenza di campionamento di 20 $Hz$ e il disturbo risulta poco attenuato, come si nota dal grafico.
+\\
+Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per campionare il segnale 
+(\textit{Teorema di Shannon}) otteniamo un grafico che evidenzia come l'attenuazione sia avvenuta e rispetti le specifiche (85 $dB$).
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{fig7.png}
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
-\end{figure}\\ \\
-Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per campionare il segnale 
-(\textit{Teorema di Shannon}) otteniamo un grafico che evidenzia come l'attenuazione sia avvenuta e rispetti le specifiche (85 $dB$).
+\end{figure}
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{fig6.png}
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
 \end{figure}\\
+\pagebreak
 
 
 \section{Test del sistema di controllo sul modello non lineare}
 
+\subsection{Sistema non linearizzato su Simulink}
+Per lo studio del sistema sul modello non lineare e in presenza di $d(t),n(t)$ abbiamo ricostruito il sistema in anello chiuso
+\\
+\begin{figure}[!h]
+\centering
+\includegraphics[width=0.5\textwidth]{schema.png}
+\end{figure}
 
+in forma non lineare utilizzando Simulink:
 
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{sistema.png}
+\caption{\label{fig:orbit}Ricostruzione sistema non lineare}
+\end{figure}
+\pagebreak
 
+Abbiamo inoltre aggiunto l'ingresso in retroazione $y$, il regolatore $R$, i disturbi di uscita
+$d(t)$ e di misura $n(t)$ e il gradino $w(t)$.
+\begin{figure}[!h]
+   \begin{minipage}{0.60\textwidth}
+     \centering
+     \includegraphics[width=1\textwidth]{misura.png}
+   \end{minipage}\hfill
+   \begin{minipage}{0.45\textwidth}
+     \centering
+     \includegraphics[width=1\textwidth]{uscita.png}
+   \end{minipage}
+\end{figure}
+
+\subsection{Simulazione sistema non perturbato}
+
+Simulando il sistema senza disturbi di misura $n(t)$ e di uscita $d(t)$ e l'ingresso a gradino $w(t)$ otteniamo dei grafici degli stati che tendono ai punti di equilibrio, in particolare
+\\
+
+\begin{figure}[!h]
+   \begin{minipage}{0.5\textwidth}
+     \centering
+     \includegraphics[width=1.03\textwidth]{x1_1.png}
+     \caption*{$x_1\longrightarrow x_{1e}=3\cdot10^7$}
+   \end{minipage}\hfill
+    \begin{minipage}{0.5\textwidth}
+     \centering
+     \includegraphics[width=1.1\textwidth]{x3_1.png}
+     \caption*{$x_2\longrightarrow x_{2e}=0$}
+   \end{minipage}\hfill
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+     \includegraphics[width=0.7\textwidth]{x3_1.png}
+     \caption*{$y=x_3\longrightarrow x_{3e}=1.215\cdot10^{-4}$}
+     \end{figure}
 \end{document}
