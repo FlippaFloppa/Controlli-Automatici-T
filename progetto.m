@@ -1,7 +1,7 @@
 close all; clear all; clc;
 
 %% Definizioni
-syms x1 x2 x3 u N D t
+syms x1 x2 x3 u N D t opt
 
 b1 = 0.3;
 b2 = 0.1;
@@ -97,7 +97,7 @@ omega_n_MAX = 7.5e7;
 
 % Sovraelongazione massima e tempo d'assestamento al 5%
 S_100_spec = 0.01;
-T_a1_spec = 0.15;
+T_a5_spec = 0.15;
 
 %% Sintesi Regolatore Statico
 mu_s=1e9; % guadagno regolatore statico
@@ -110,10 +110,9 @@ G_e=G*Rs;
 figure(2);
 hold on;
 % Calcolo specifiche S% => Margine di fase
-xi = 0.83;
+xi = 0.83;  % Coefficiente di smorzamento 0.826085
 S_100 = 100*exp(-pi*xi/sqrt(1-xi^2));
 Mf_spec = xi*100; % Mf_spec = 83
-Mf_real = 40;
 
 % Specifiche su d
 Bnd_d_x = [omega_d_min; omega_d_MAX; omega_d_MAX; omega_d_min];
@@ -127,7 +126,7 @@ patch(Bnd_n_x, Bnd_n_y,'g','FaceAlpha',0.2,'EdgeAlpha',0);
 
 % Specifiche tempo d'assestamento (minima pulsazione di taglio)
 omega_Ta_min = 1e-11; % lower bound per il plot
-omega_Ta_MAX = 460/(Mf_spec*T_a1_spec); % omega_c >= 460/(Mf*T^*) ~ 3.69
+omega_Ta_MAX = 460/(Mf_spec*T_a5_spec); % omega_c >= 460/(Mf*T^*) ~ 3.69
 Bnd_Ta_x = [omega_Ta_min; omega_Ta_MAX; omega_Ta_MAX; omega_Ta_min];
 Bnd_Ta_y = [0; 0; -1000; -1000];
 patch(Bnd_Ta_x, Bnd_Ta_y,'b','FaceAlpha',0.2,'EdgeAlpha',0);
@@ -151,7 +150,10 @@ Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞";"fis. real.";"G_e(j\omega)";
 legend(Legend_mag);
 
 % Plot Bode con margini di stabilità
-margin(G_e,{bode_min,bode_max});
+opt = bodeoptions('cstprefs');
+opt.YLim={[-400 400],[-180 0]};
+opt.XLim={[bode_min,bode_max]};
+bodeplot(G_e,opt);
 margin(G,{bode_min,bode_max});
 title("Diagramma di Bode con regolatore Statico")
 grid on;
@@ -176,19 +178,18 @@ legend(Legend_arg);
 
 % Rete anticipatrice
 Mf_star = Mf_spec; % Mf_star = 83
-omega_c_star_a=1e2;
+omega_c_star=1e2;
 
-[mag_omega_c_star, arg_omega_c_star, ~] = bode(G_e, omega_c_star_a);
+[mag_omega_c_star, arg_omega_c_star, ~] = bode(G_e, omega_c_star);
 mag_omega_c_star_db = 20*log10(mag_omega_c_star);
 
 M_star = 10^(-mag_omega_c_star_db/20);
 phi_star = Mf_star - 180 - arg_omega_c_star;
 
-% Formule di inversione
-alpha_tau_a = (cos(phi_star*pi/180) - 1/M_star)/(omega_c_star_a*sin(phi_star*pi/180));
-tau_a = (M_star - cos(phi_star*pi/180))/(omega_c_star_a*sin(phi_star*pi/180));
-alpha_a = alpha_tau_a / tau_a;
-Rd_a=(1 + tau_a*s)/(1 + alpha_a*tau_a*s);
+% Formule di inversion
+alpha_tau = (cos(phi_star*pi/180) - 1/M_star)/(omega_c_star*sin(phi_star*pi/180))
+tau = (M_star - cos(phi_star*pi/180))/(omega_c_star*sin(phi_star*pi/180))
+Rd_a=(1 + tau*s)/(1 + alpha_tau*s);
 
 check_flag = cos(phi_star*pi/180) - 1/M_star;
 if check_flag < 0
@@ -216,7 +217,7 @@ Legend_mag = ["A_d"; "A_n"; "\omega_{c,min}";"e∞";"fis. real.";"L(j\omega)"; "
 legend(Legend_mag);
 
 % Plot Bode con margini di stabilità
-margin(L,{bode_min,bode_max});
+bodeplot(L,opt);
 margin(G_e,{bode_min,bode_max});
 title("Diagramma di Bode con regolatore Statico e Dinamico");
 grid on; zoom on;
@@ -244,13 +245,14 @@ grid on, zoom on, hold on;
 
 % vincolo sovraelongazione
 patch([0,T_simulation,T_simulation,0],[W*(1+S_100_spec),W*(1+S_100_spec),W+1,W+1],'r','FaceAlpha',0.3,'EdgeAlpha',0.5);
-ylim([0,W+1]);
+patch([T_a5_spec,T_simulation,T_simulation,T_a5_spec],[W-W*0.05,W-W*0.05,0,0],'g','FaceAlpha',0.3,'EdgeAlpha',0.5)
+ylim([W/2,W+1]);
 
 plot(t_step,y_step,'b');
 title("Risposta al gradino");
 ylim([0,W*1.2]);
 
-Legend_step = ["Vincolo sovraelongazione";"Risposta al gradino"];
+Legend_step = ["Vincolo sovraelongazione";"Tempo di assestamento";"Risposta al gradino"];
 legend(Legend_step);
 
 %% Check disturbo in uscita
@@ -279,7 +281,7 @@ legend('d','y_d')
 %% Check disturbo di misura
 
 figure(6);
-
+tt = (0:1e-6:1e-2);
 % calcolo disturbo di misura
 n=0;
 for i=1:4

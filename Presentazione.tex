@@ -209,7 +209,7 @@ Successivamente rappresentiamo la funzione con il diagramma di Bode.
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{fig1.png}
-\caption{\label{fig:bode}Diagramma di Bode di $G(jw)$}
+\caption{\label{fig:bode}Diagramma di Bode di $G(j\omega)$}
 \end{figure}
 
 \section{Il regolatore}
@@ -232,22 +232,104 @@ La funzione di trasferimento in serie con il regolatore statico risulta:
 \caption{\label{fig:orbit}Diagramma di Bode di $G_e(jw)$ con vincoli}
 \end{figure}
 
-Si nota come non vengano rispettati i vincoli sui tempi di assestamento e sul margine di fase, che verranno fatte rispettare attraverso il regolatore dinamico.
+Si nota come non vengano rispettati i vincoli sul tempo di assestamento e sul margine di fase, che verranno fatte rispettare attraverso il regolatore dinamico.
 
 
 \subsection{Regolatore Dinamico}
  La parte dinamica del regolatore deve rispettare determinate specifiche: il margine di fase $ Mf \geq 40\degree $ (2) per garantire un certo livello di robustezza del sistema regolato. 
-La sovraelongazione percentuale massima che il sistema può accettare è $ S \leq 1\% $ (3). Il tempo di assestamento all' $ \epsilon\% $ deve essere inferiore a $ T_a,e=0,15s $ fissato (4).\\\\ Il disturbo sull'uscita $ d(t)$ con una banda limitata nel range di pulsazioni $[0.08]$, deve
-essere abbattutto di almeno 45 dB (5).
-Il rumore di misura $ n(t)$ con una banda limitata nel range di pulsazioni $[5\cdot10^4, 7.5\cdot10^7]$, deve
-essere abbattutto di almeno 85 dB (6).
+La sovraelongazione percentuale massima che il sistema può accettare è $ S \leq 1\% $ (3). Il tempo di assestamento all' $ \epsilon\% = 5\%$ deve essere inferiore a $ T_{a,\epsilon}=0,15s $ (4).\\
 
-scriviscrivi
-scriviscrivi
-scrivi
-scrivi
+Per soddisfare queste richieste utilizziamo una rete anticipatrice del tipo
+\begin{large}
+\[
+R_d=\frac{1+\tau s}{1 + \alpha\tau s}
+\]
+\end{large}
+È quindi necessario calcolare i parametri $\tau$ ed $\alpha$ utilizzando le formule di inversione
+\begin{large}
+\[
+\tau=\frac{M^*-cos(\varphi^*)}{\omega_c^* sin(\varphi^*)}
+\]
+\[
+\alpha\tau=\frac{cos(\varphi^*)-\frac{1}{M^*}}{\omega_c^* sin(\varphi^*)}
+\]
+\end{large}
+nelle quali $M^* > 1$ è l'amplificazione, $\varphi^*$ lo sfasamento e $\omega_c^*$ la frequenza di taglio, cioè la frequenza tale che $|L(j\omega_c^*)|=0$.\\Per rispettare le specifiche sul tempo di assestamento è necessario che $\omega_c^*\geq \frac{460}{T^*M_f}$, con $M_f\geq40^{\circ}$ margine di fase,$T^*=0.02 s$ tempo di assestamento e $460$ una costante relativa al tempo di assestamento all'$1\%$.\\
+Nel nostro caso (due poli a parte reale negativa) vale $M_f=100\xi$, quindi per ricavare $\xi$ costante di smorzamento si utilizza la formula della sovraelongazione percentuale (con $S_\%=1\%$), cioè 
+\begin{large}
+\[
+S_\%=100 e^{\frac{-\pi\xi}{\sqrt{1-\xi^2}}} \longrightarrow \xi\approx 0.83
+\]
+\end{large}
+Ricaviamo quindi $M_f=83^{\circ}$ e $\omega_c^*\geq 36.94 rad/s$, sapendo inoltre che
+\begin{large}
+\[
+M^*=10^{-\frac{|G_e(j\omega_c^*)|_{dB}}{20}}
+\varphi
+\]
+\[
+\varphi^*=M_f^*-180-arg\{G_e(j\omega_c^*)\}
+\]
+\end{large}
+possiamo ricavare i parametri $\tau$ ed $\alpha\tau$
+\begin{large}
+\[
+\tau=\frac{M^*-cos(\varphi^*)}{\omega_c^* sin(\varphi^*)}=3.02217
+\]
+\[
+\alpha\tau=\frac{cos(\varphi^*)-\frac{1}{M^*}}{\omega_c^* sin(\varphi^*)}=0.0012
+\]
+\end{large}
+Avendo ricavato la rete anticipatrice riusciamo a calcolare la funzione di trasferimento d'anello aperto, cioè
+\begin{large}
+\[
+L(j\omega)=G_e(s)R_d(s)=\frac{83628 (s+0.3309) (s+0.3) (s+7.386e-08)}{s (s+830.3) (s+0.3) (s+0.1) (s+2.462e-08)}
+\]
+\end{large}
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{fig3.png}
+\caption{\label{fig:orbit}Diagramma di Bode di $L(j\omega)$ con vincoli}
+\end{figure}\\
+Come si può notare dal grafico soprastante sono stati rispettati tutti i vincoli relativi a tempo di assestamento e margine di fase.
 
 \section{Test del sistema di controllo sul modello lineare}
+
+\subsection{Risposta al gradino}
+Data una funzione gradino $w(t)=8\cdot10{^-5}\cdot1(t)$ la risposta del sistema in anello chiuso rispetta i vincoli del tempo di assestamento e dell'errore a regime, come si può notare dalla figura.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{fig4.png}
+\caption{\label{fig:orbit}Risposta al gradino $w(t)$}
+\end{figure}\\
+
+\subsection{Disturbo di uscita}
+Il sistema riesce inoltre ad attenuare il disturbo di uscita $d(t)=\sum_{k=1}^4 3\cdot10^{-5}\cdot sin(0.02kt)$ quasi completamente (specifica 45 $dB$).
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{fig5.png}
+\caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
+\end{figure}\\
+
+\subsection{Disturbo di misura}
+Da specifica dobbiamo attenuare il disturbo di misura $n(t)=\sum_{k=1}^4 2\cdot10^{-4}\cdot sin(5\cdot 10^4kt)$. Inizialmente abbiamo plottato il grafico con una frequenza di campionamento di 20 $Hz$ e il disturbo risulta poco attenuato, come si nota dal grafico
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{fig7.png}
+\caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
+\end{figure}\\ \\
+Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per campionare il segnale 
+(\textit{Teorema di Shannon}) otteniamo un grafico che evidenzia come l'attenuazione sia avvenuta e rispetti le specifiche (85 $dB$).
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{fig6.png}
+\caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
+\end{figure}\\
+
+
+\section{Test del sistema di controllo sul modello non lineare}
+
+
 
 
 \end{document}
