@@ -9,6 +9,7 @@
 \usepackage{xassoccnt}
 \usepackage{setspace}
 \usepackage{caption}
+\usepackage{hyperref}
 \setstretch{1.5}
 
 % Set page size and margins
@@ -31,8 +32,10 @@ Controlli Automatici - T
 \date{}
 \begin{document}
 \maketitle
-
 \begin{abstract}
+
+
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.3\textwidth]{Schermata 2022-02-04 alle 19.54.38.png}
@@ -49,15 +52,16 @@ Avendo già fornito il primo controllore, le equazioni del sistema risultano:
 \[\Dot{\omega} = -\frac{2\omega \Dot{\rho} }{\rho} -
 \frac{\beta_2 \omega }{m}+ \frac{\tau}{m \rho} ,\]
 
-con $\tau(t)$ ingresso libero ed inoltre velocità angolare $\omega(t)$ misurabile.
+\noindent
+con $\tau(t)$ ingresso libero e velocità angolare $\omega(t)$ misurabile.
 
-
+\section*{Richieste:}
 \begin{enumerate}
 \item Riportare il sistema nella forma di stato e linearizzazione.
-\item Calcolare la funzione di trasferimento da $\delta U$  a  $\delta Y$,  ovvero la funzione G(s) tale che  \begin{center} $\delta Y (s)$ = G(s) $\delta U (s)$ \end{center}
+\item Calcolare la funzione di trasferimento da $\delta U$  a  $\delta Y$,  ovvero la funzione $G(s)$ tale che  \begin{center} $\delta Y (s) = G(s) \delta U (s)$ \end{center}
 \item Progettare il regolatore fisicamente realizzabile secondo determinate specifiche.
 \item Testare il sistema di controllo linearizzato con :
-\[	\omega(t)=\num{8e-5} \cdot 1(t) , \ d(t)= \sum_{k=1}^4 \num{3e-5}\cdot sin(0.02kt) e \  n(t)= \sum_{k=1}^4 \num{3e-5}\cdot sin(\num{5e4}kt)\]
+\[	\omega(t)=8\cdot 10^{-5} \cdot 1(t) \ , \ d(t)= \sum_{k=1}^4 3 \cdot 10^{-5}\cdot sin(0.02 \cdot kt) \ , \  n(t)= \sum_{k=1}^4 3 \cdot 10^{-5}\cdot sin(5\cdot10^{4} \cdot kt)\]
 \item Testare il sistema di controllo sul modello non lineare (ed in presenza di $d(t)$ ed $n(t)$).
 \end{enumerate}
 
@@ -86,14 +90,14 @@ con $\tau(t)$ ingresso libero ed inoltre velocità angolare $\omega(t)$ misurabi
 
 \section{Sistema in forma di stato e linearizzazione}
 \subsection{Forma di stato}
-Siano $x_1=\tau$ , $x_2=\Dot{\rho}$ , $x_3=\omega$ stati , $\upsilon=\tau$ ingresso e $y=x_3$ uscita del sistema.\\
+Siano $x_1=\rho$ , $x_2=\Dot{\rho}$ , $x_3=\omega$ stati , $u=\tau$ ingresso e $y=x_3$ uscita del sistema.\\
 Riscriviamo le equazioni come sistema in forma di stato\\
 \begin{large}
 \[
 \Dot{x}=
 \begin{bmatrix} \Dot{x_1} \\\Dot{x_2} \\ \Dot{x_3}\end{bmatrix} =
 \begin{bmatrix} f_1(x,u) \\ f_2(x,u) \\ f_3(x,u)\end{bmatrix} =
-\begin{bmatrix} \dot{x_2} \\
+\begin{bmatrix} x_2 \\
 -\frac{\beta_1 x_2}{m} + (k-1)(\frac{kG M}{x_1^2} - x_1 x_3^2) \\ 
 -2\frac{x_3 x_2}{x_1} - \frac{\beta_2 x_3}{m} + \frac{u}{m x_1}  \end{bmatrix}
 \]
@@ -104,21 +108,21 @@ y=x_3
 
 \subsection{Coppia di equilibrio}
 Per rendere il sistema lineare è necessario calcolare i punti di equilibrio $x_e$ e $u_e$.\\
-Da specifica sappiamo che $x_1e=\rho_e$, quindi poniamo
+Da specifica sappiamo che $x_{1e}=\rho_e$, quindi poniamo
 \begin{large}
 \[
 \begin{bmatrix} f_1(x_e,u_e) \\ f_2(x_e,u_e) \\ f_3(x_e,u_e)\end{bmatrix} =
-\begin{bmatrix} \dot{x_2e} \\
--\frac{\beta_1 x_2e}{m} + (k-1)(\frac{kG M}{x_1e^2} - x_1e x_3e^2) \\ 
--2\frac{x_3e x_2e}{x_1e} - \frac{\beta_2 x_3e}{m} + \frac{u}{m x_1e}  \end{bmatrix} =
+\begin{bmatrix} x_{2e} \\
+-\frac{\beta_1 x_{2e}}{m} + (k-1)(\frac{kG M}{x_{1e}^2} - x_{1e} x_{3e}^2) \\ 
+-2\frac{x_{3e} x_{2e}}{x_{1e}} - \frac{\beta_2 x_{3e}}{m} + \frac{u}{m x_{1e}}  \end{bmatrix} =
 \begin{bmatrix} 0 \\ 0 \\ 0\end{bmatrix}
 \]
 \end{large}
 Ricaviamo quindi la coppia di equilibrio:
 \begin{large}
 \[
-x_e=\begin{bmatrix} x_1e \\ x_2e \\ x_3e\end{bmatrix}=
-\begin{bmatrix} 3\cdot10^7 \\ 0 \\ 1.215\cdot10^-4\end{bmatrix}
+x_e=\begin{bmatrix} x_{1e} \\ x_{2e} \\ x_{3e}\end{bmatrix}=
+\begin{bmatrix} 3\cdot10^7 \\ 0 \\ 1.215\cdot10^{-4}\end{bmatrix}
 \]
 \[
 u_e=364.63
@@ -134,6 +138,7 @@ Occorre quindi passare dal modello non linearizzato
 \[
 y=g(x,u)
 \]
+\noindent
 a quello linearizzato nell'intorno della coppia di equilibrio $(x_e,u_e)$
 \[
 \delta\Dot{x}=A\delta{x}+B\delta{u}
@@ -141,7 +146,8 @@ a quello linearizzato nell'intorno della coppia di equilibrio $(x_e,u_e)$
 \[
 \delta{y}=C\delta{x}+D\delta{u}
 \]
-Determiniamo quindi le matrici A,B,C,D:
+\noindent
+Determiniamo quindi le matrici A, B, C, D:
 \begin{large}
 \[
 A=\frac{ \delta{f(x,u)}}{\delta{x}}=
@@ -171,6 +177,7 @@ D=\frac{ \delta{g(x,u)}}{\delta{u}}|_{u=u_e}^{x=x_e}=
 \]
 \end{large}
 
+\noindent
 Sostituendo le matrici nel sistema iniziale otteniamo quindi
 \begin{large}
 \[
@@ -194,7 +201,7 @@ G(s)=\frac{\mathcal{L}(y(t))}{\mathcal{L}(u(t))}=\frac{Y(s)}{U(s)}=C(sI-A)^{-1} 
 \end{cases}
 \]
 \end{large}
-
+\noindent
 Ricaviamo quindi che
 \begin{large}
 \[
@@ -204,16 +211,14 @@ G(s) = 3.3333\cdot 10^{-08}\frac{(s+0.3) (s+7.386\cdot 10^{-08})} {(s+0.3) (s+0.
 
 
 
-\subsection{Bode}
-
-Successivamente rappresentiamo la funzione con il diagramma di Bode.
+\subsection{Rappresentazione $G(s)$ con diagramma di Bode}
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{grafici/fig1.png}
 \caption{\label{fig:bode}Diagramma di Bode di $G(j\omega)$}
 \end{figure}
-\pagebreak
+\newpage
 
 \section{Il regolatore}
 La funzione di trasferimento in anello aperto è definita come:
@@ -221,12 +226,12 @@ La funzione di trasferimento in anello aperto è definita come:
 verrà ricavata tramite il calcolo di $R(s)$, composto dal regolatore statico $R_s(s)$ e dal regolatore dinamico $R_d(s)$, il regolatore richiesto deve rispettare i vincoli imposti ed essere fisicamente realizzabile.
 \subsection{Regolatore Statico}
 
-Dato che $\ G(s)$ non ha un polo nell'origine, per rispettare l'errore a regime nullo (1), è necessario inserirne uno. Considerando il guadagno del regolatore statico come  $ \mu_s =\num{e9}$ dB, otteniamo:
+Dato che $\ G(s)$ non ha un polo nell'origine, per far sì che l'errore a regime sia nullo(1), è necessario inserirne uno. Ponendo il guadagno del regolatore statico a $ \mu_s =\num{e9}$ dB, otteniamo:
 
 \[ R_s = \frac{\mu_s}{s}  \]
 
-
-La funzione di trasferimento in serie con il regolatore statico risulta:
+\noindent
+La funzione di trasferimento estesa al regolatore statico risulta quindi:
 \[ G_e(s) = R_s(s) \cdot G(s) \]
 
 \begin{figure}[!h]
@@ -234,7 +239,7 @@ La funzione di trasferimento in serie con il regolatore statico risulta:
 \includegraphics[width=1\textwidth]{grafici/fig2.png}
 \caption{\label{fig:orbit}Diagramma di Bode di $G_e(jw)$ con vincoli}
 \end{figure}
-
+\noindent
 Si nota come non vengano rispettati i vincoli sul tempo di assestamento e sul margine di fase, che verranno fatte rispettare attraverso il regolatore dinamico.
 
 
@@ -242,12 +247,15 @@ Si nota come non vengano rispettati i vincoli sul tempo di assestamento e sul ma
  La parte dinamica del regolatore deve rispettare determinate specifiche: il margine di fase $ Mf \geq 40\degree $ (2) per garantire un certo livello di robustezza del sistema regolato. 
 La sovraelongazione percentuale massima che il sistema può accettare è $ S \leq 1\% $ (3). Il tempo di assestamento all' $ \epsilon\% = 5\%$ deve essere inferiore a $ T_{a,\epsilon}=0,15s $ (4).\\
 
+\noindent
 Per soddisfare queste richieste utilizziamo una rete anticipatrice del tipo
 \begin{large}
 \[
 R_d=\frac{1+\tau s}{1 + \alpha\tau s}
 \]
 \end{large}
+
+\noindent
 È quindi necessario calcolare i parametri $\tau$ ed $\alpha$ utilizzando le formule di inversione
 \begin{large}
 \[
@@ -257,14 +265,16 @@ R_d=\frac{1+\tau s}{1 + \alpha\tau s}
 \alpha\tau=\frac{cos(\varphi^*)-\frac{1}{M^*}}{\omega_c^* sin(\varphi^*)}
 \]
 \end{large}
-nelle quali $M^* > 1$ è l'amplificazione, $\varphi^*$ lo sfasamento e $\omega_c^*$ la frequenza di taglio, cioè la frequenza tale che $|L(j\omega_c^*)|=0$.\\Per rispettare le specifiche sul tempo di assestamento è necessario che $\omega_c^*\geq \frac{460}{T^*M_f}$, con $M_f\geq40^{\circ}$ margine di fase,$T^*=0.02 s$ tempo di assestamento e $460$ una costante relativa al tempo di assestamento all'$1\%$.\\
-Nel nostro caso (due poli a parte reale negativa) vale $M_f=100\xi$, quindi per ricavare $\xi$ costante di smorzamento si utilizza la formula della sovraelongazione percentuale (con $S_\%=1\%$), cioè 
+
+\noindent
+nelle quali $M^* > 1$ è l'amplificazione, $\varphi^*$ lo sfasamento e $\omega_c^*$ la frequenza di taglio, cioè la frequenza tale che $|L(j\omega_c^*)|=0$.\\Per rispettare le specifiche è necessario che $\omega_c^*\geq \frac{460}{T^*M_f}$, con $M_f\geq40^{\circ}$ margine di fase, $T^*=0.02 s$ tempo di assestamento e $460$ una costante relativa al tempo di assestamento all'$1\%$.\\
+Nel nostro caso (due poli a parte reale negativa) vale $M_f=100\xi$, quindi per ricavare $\xi$ (costante di smorzamento) si utilizza la formula inversa della sovraelongazione percentuale (con $S_\%=1\%$), cioè 
 \begin{large}
 \[
 S_\%=100 e^{\frac{-\pi\xi}{\sqrt{1-\xi^2}}} \longrightarrow \xi\approx 0.83
 \]
 \end{large}
-Ricaviamo quindi $M_f=83^{\circ}$ e $\omega_c^*\geq 36.94 rad/s$, sapendo inoltre che
+Ricaviamo quindi $M_f=83^{\circ}$ e $\omega_c^*\geq 36.94 \frac{rad}{s}$, sapendo inoltre che
 \begin{large}
 \[
 M^*=10^{-\frac{|G_e(j\omega_c^*)|_{dB}}{20}}
@@ -283,7 +293,7 @@ possiamo ricavare i parametri $\tau$ ed $\alpha\tau$
 \alpha\tau=\frac{cos(\varphi^*)-\frac{1}{M^*}}{\omega_c^* sin(\varphi^*)}=0.0012
 \]
 \end{large}
-Avendo ricavato la rete anticipatrice riusciamo a calcolare la funzione di trasferimento d'anello aperto, cioè
+Avendo ricavato la rete anticipatrice riusciamo a calcolare la funzione di trasferimento d'anello aperto:
 \begin{large}
 \[
 L(j\omega)=G_e(s)R_d(s)=\frac{83628 (s+0.3309) (s+0.3) (s+7.386e-08)}{s (s+830.3) (s+0.3) (s+0.1) (s+2.462e-08)}
@@ -300,22 +310,11 @@ Come si può notare dal grafico soprastante sono stati rispettati tutti i vincol
 \section{Test del sistema di controllo sul modello lineare}
 \SuspendCounters{subsection}
 \subsection{Funzioni di sensitività}
-<<<<<<< Updated upstream
-Rappresentazione della funzione di sensitività $S(jw)$, funzione di sensitività complementare $F(jw)$ e funzione di sensitività del controllo $Q(jw)$.
-
-Osservando $|F(s)| = 0$ per $\omega << \omega c $ e  $|F(s)| = |L(s)| $ per $\omega >> \omega c$ abbiamo la conferma che le funzioni siano corrette.
-\begin{figure}[!h]
-\centering
-\includegraphics[width=1\textwidth]{grafici/fig10.png}
-\end{figure}
-
-=======
 Confrontando questo grafico con la funzione $L(jw)$ rappresentata nella \textit{Figura 4} possiamo controllare la correttezza delle funzioni di sensitività scritte:
 \begin{itemize}
 \item $S(jw)$ è corretta poiché $|S(jw)| = 1$ per $\omega > \omega c  $ e  $|S(jw)| = \frac{1}{|L(jw)|} $ per $\omega \leq \omega c $
 \item $F(jw)$ è corretta poiché $|F(jw)| = 1$ per $\omega \ll \omega c $ e  $|F(jw)| = |L(jw)| $ per $\omega \gg \omega c$
 \item $Q(jw)$ è corretta poiché $|Q(jw)| = \frac{1}{|G(jw)|}$ per $\omega \leq \omega c $ e  $|Q(jw)| = |R(jw)| $ per $\omega > \omega c$ (Questo lo si osserva tramite la \textit{Figura 2})
->>>>>>> Stashed changes
 
 \end{itemize}
 
@@ -354,6 +353,7 @@ Da specifica dobbiamo attenuare il disturbo di misura $n(t)=\sum_{k=1}^4 2\cdot1
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
 \end{figure}
 
+\noindent
 Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per campionare il segnale 
 (\textit{Teorema di Shannon}) otteniamo un grafico che evidenzia come l'attenuazione sia avvenuta e rispetti le specifiche (85 $dB$).
 
@@ -376,6 +376,7 @@ Per lo studio del sistema sul modello non lineare e in presenza di $d(t),n(t)$ a
 \includegraphics[width=0.5\textwidth]{schema.png}
 \end{figure}
 
+\noindent
 in forma non lineare utilizzando Simulink:
 
 \begin{figure}[!h]
@@ -400,7 +401,7 @@ Abbiamo inoltre aggiunto l'ingresso in retroazione $y$, il regolatore $R$, i dis
 \newpage 
 \subsection{Simulazione sistema non perturbato}
 
-Simulando il sistema senza disturbi di misura $n(t)$ e di uscita $d(t)$ e l'ingresso a gradino $w(t)$ otteniamo dei grafici degli stati che tendono ai punti di equilibrio, in particolare:
+Simulando il sistema rimuovendo i disturbi di misura $n(t)$, di uscita $d(t)$ e l'ingresso a gradino $w(t)$ otteniamo dei grafici degli stati che tendono ai punti di equilibrio, in particolare:
 \\
 
 \begin{figure}[!h]
@@ -426,7 +427,7 @@ Simulando il sistema senza disturbi di misura $n(t)$ e di uscita $d(t)$ e l'ingr
 \subsection{Simulazione con disturbi e gradino}
 Con l'introduzione dei disturbi si nota un notevole cambiamento nell'andamento dei grafici:
 \begin{itemize}
-    \item $x_1$ tende a scendere fino al raggiungimento di un nuovo equilibrio.
+    \item $x_1$ tende a diminuire senza particolari oscillazioni.
     \item $x_2$ ed $x_3$ invece vengono notevolmente perturbati dai disturbi di uscita e misura, ma riescono comunque ad oscillare senza scostarsi dal loro punto di equilibrio.
 \end{itemize}
 
@@ -448,10 +449,6 @@ Con l'introduzione dei disturbi si nota un notevole cambiamento nell'andamento d
      \includegraphics[width=0.6\textwidth]{grafici/x3_2.png}
      \caption*{$y=x_3$}
 \end{figure}
-<<<<<<< Updated upstream
-
-\end{document}
-=======
 \noindent
 Simulando per un per un intervallo più lungo abbiamo notato che anche $x_1$ si assesta ad un nuovo punto di equilibrio $\overline{x_{1e}}\simeq1.98955\cdot10^7$, evidenziando la robustezza del sistema anche se soggetto a disturbi.
 
@@ -464,6 +461,8 @@ Simulando per un per un intervallo più lungo abbiamo notato che anche $x_1$ si 
 \subsection{Test con diverse ampiezze di gradino}
 \noindent
 Nel primo grafico è rappresentata l'uscita in presenza del gradino dato da specifica $W=8\cdot10^{-5}$, si nota come dopo poco tempo (0,05 s) il grafico si sia stabilizzato all'equilibrio.
+
+
 
 \begin{figure}[!h]
     \centering
@@ -491,4 +490,3 @@ Il comportamento cambia quando l'ampiezza raggiunge valori dell'ordine di $W\cdo
 \end{figure}
 
 \end{document}
->>>>>>> Stashed changes
