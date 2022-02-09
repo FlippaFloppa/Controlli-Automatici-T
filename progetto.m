@@ -10,10 +10,7 @@ k=1.5;
 kG=6.67e-11;
 M = 5.98e24;
 
-% intervallo di tempo
-interv = 0:0.1:100; % da 0 a 100 secondi con passo 0.1
-
-% sistema
+% Sistema non lineare
 f1=x2;
 f2=-b1*x2/m + (k-1)*(kG*M/x1^2 -x1*x3^2);
 f3=-2*x3*x2/x1 - b2*x3/m + u/(m*x1);
