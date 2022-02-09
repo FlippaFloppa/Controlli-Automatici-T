@@ -210,7 +210,7 @@ Successivamente rappresentiamo la funzione con il diagramma di Bode.
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig1.png}
+\includegraphics[width=1\textwidth]{grafici/fig1.png}
 \caption{\label{fig:bode}Diagramma di Bode di $G(j\omega)$}
 \end{figure}
 \pagebreak
@@ -231,7 +231,7 @@ La funzione di trasferimento in serie con il regolatore statico risulta:
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig2.png}
+\includegraphics[width=1\textwidth]{grafici/fig2.png}
 \caption{\label{fig:orbit}Diagramma di Bode di $G_e(jw)$ con vincoli}
 \end{figure}
 
@@ -291,7 +291,7 @@ L(j\omega)=G_e(s)R_d(s)=\frac{83628 (s+0.3309) (s+0.3) (s+7.386e-08)}{s (s+830.3
 \end{large}
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig3.png}
+\includegraphics[width=1\textwidth]{grafici/fig3.png}
 \caption{\label{fig:orbit}Diagramma di Bode di $L(j\omega)$ con vincoli}
 \end{figure}\\
 Come si può notare dal grafico soprastante sono stati rispettati tutti i vincoli relativi a tempo di assestamento e margine di fase.
@@ -299,14 +299,22 @@ Come si può notare dal grafico soprastante sono stati rispettati tutti i vincol
 
 \section{Test del sistema di controllo sul modello lineare}
 \SuspendCounters{subsection}
-\subsection{Sensitività funzione}
+\subsection{Funzioni di sensitività}
+Rappresentazione della funzione di sensitività $S(jw)$, funzione di sensitività complementare $F(jw)$ e funzione di sensitività del controllo $Q(jw)$.
+
+Osservando $|F(s)| = 0$ per $\omega << \omega c $ e  $|F(s)| = |L(s)| $ per $\omega >> \omega c$ abbiamo la conferma che le funzioni siano corrette.
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{grafici/fig10.png}
+\end{figure}
+
 
 \ResumeSuspendedCounters{subsection}
 \subsection{Risposta al gradino}
 Data una funzione gradino $w(t)=8\cdot10{^-5}\cdot1(t)$ la risposta del sistema in anello chiuso rispetta i vincoli del tempo di assestamento e dell'errore a regime, come si può notare dalla figura.
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig4.png}
+\includegraphics[width=1\textwidth]{grafici/fig4.png}
 \caption{\label{fig:orbit}Risposta al gradino $w(t)$}
 \end{figure}
 
@@ -314,26 +322,28 @@ Data una funzione gradino $w(t)=8\cdot10{^-5}\cdot1(t)$ la risposta del sistema 
 Il sistema riesce inoltre ad attenuare il disturbo di uscita $d(t)=\sum_{k=1}^4 3\cdot10^{-5}\cdot sin(0.02kt)$ quasi completamente (specifica 45 $dB$).
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig5.png}
+\includegraphics[width=1\textwidth]{grafici/fig5.png}
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
 \end{figure}
 
 \subsection{Disturbo di misura}
-Da specifica dobbiamo attenuare il disturbo di misura $n(t)=\sum_{k=1}^4 2\cdot10^{-4}\cdot sin(5\cdot 10^4kt)$. Inizialmente abbiamo plottato il grafico con una frequenza di campionamento di 20 $Hz$ e il disturbo risulta poco attenuato, come si nota dal grafico.
+Da specifica dobbiamo attenuare il disturbo di misura $n(t)=\sum_{k=1}^4 2\cdot10^{-4}\cdot sin(5\cdot 10^4kt)$. Inizialmente abbiamo generato il grafico con una frequenza di campionamento di 20 $Hz$ e il disturbo risulta poco attenuato, come si nota dal grafico.
 \\
-Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per campionare il segnale 
-(\textit{Teorema di Shannon}) otteniamo un grafico che evidenzia come l'attenuazione sia avvenuta e rispetti le specifiche (85 $dB$).
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig7.png}
+\includegraphics[width=1\textwidth]{grafici/fig7.png}
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
 \end{figure}
 
+Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per campionare il segnale 
+(\textit{Teorema di Shannon}) otteniamo un grafico che evidenzia come l'attenuazione sia avvenuta e rispetti le specifiche (85 $dB$).
+
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{fig6.png}
+\includegraphics[width=1\textwidth]{grafici/fig6.png}
 \caption{\label{fig:orbit}Attenuazione disturbo di uscita $d(t)$}
-\end{figure}\\
+\end{figure}
+
 \pagebreak
 
 
@@ -341,7 +351,7 @@ Aumentando la frequenza di campionamento a 1 $MHz$, più che sufficiente per cam
 
 \subsection{Sistema non linearizzato su Simulink}
 Per lo studio del sistema sul modello non lineare e in presenza di $d(t),n(t)$ abbiamo ricostruito il sistema in anello chiuso
-\\
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=0.5\textwidth]{schema.png}
@@ -351,7 +361,7 @@ in forma non lineare utilizzando Simulink:
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1\textwidth]{sistema.png}
+\includegraphics[width=1\textwidth]{grafici/sistema.png}
 \caption{\label{fig:orbit}Ricostruzione sistema non lineare}
 \end{figure}
 \pagebreak
@@ -361,35 +371,64 @@ $d(t)$ e di misura $n(t)$ e il gradino $w(t)$.
 \begin{figure}[!h]
    \begin{minipage}{0.60\textwidth}
      \centering
-     \includegraphics[width=1\textwidth]{misura.png}
+     \includegraphics[width=1\textwidth]{grafici/misura.png}
    \end{minipage}\hfill
    \begin{minipage}{0.45\textwidth}
      \centering
-     \includegraphics[width=1\textwidth]{uscita.png}
+     \includegraphics[width=1\textwidth]{grafici/uscita.png}
    \end{minipage}
 \end{figure}
 
+\newpage 
 \subsection{Simulazione sistema non perturbato}
 
-Simulando il sistema senza disturbi di misura $n(t)$ e di uscita $d(t)$ e l'ingresso a gradino $w(t)$ otteniamo dei grafici degli stati che tendono ai punti di equilibrio, in particolare
+Simulando il sistema senza disturbi di misura $n(t)$ e di uscita $d(t)$ e l'ingresso a gradino $w(t)$ otteniamo dei grafici degli stati che tendono ai punti di equilibrio, in particolare:
 \\
 
 \begin{figure}[!h]
    \begin{minipage}{0.5\textwidth}
      \centering
-     \includegraphics[width=1.03\textwidth]{x1_1.png}
+     \includegraphics[width=1.03\textwidth]{grafici/x1_1.png}
      \caption*{$x_1\longrightarrow x_{1e}=3\cdot10^7$}
    \end{minipage}\hfill
     \begin{minipage}{0.5\textwidth}
      \centering
-     \includegraphics[width=1.1\textwidth]{x3_1.png}
+     \includegraphics[width=1.1\textwidth]{grafici/x2_1.png}
      \caption*{$x_2\longrightarrow x_{2e}=0$}
    \end{minipage}\hfill
 \end{figure}
 
 \begin{figure}[!h]
     \centering
-     \includegraphics[width=0.7\textwidth]{x3_1.png}
+     \includegraphics[width=0.7\textwidth]{grafici/x3_1.png}
      \caption*{$y=x_3\longrightarrow x_{3e}=1.215\cdot10^{-4}$}
-     \end{figure}
+\end{figure}
+\newpage
+\noindent
+\subsection{Simulazione con disturbi e gradino}
+Con l'introduzione dei disturbi si nota un notevole cambiamento nell'andamento dei grafici:
+\begin{itemize}
+    \item $x_1$ tende a scendere fino al raggiungimento di un nuovo equilibrio.
+    \item $x_2$ ed $x_3$ invece vengono notevolmente perturbati dai disturbi di uscita e misura, ma riescono comunque ad oscillare senza scostarsi dal loro punto di equilibrio.
+\end{itemize}
+
+\begin{figure}[!h]
+   \begin{minipage}{0.5\textwidth}
+     \centering
+     \includegraphics[width=1.06\textwidth]{grafici/x1_2.png}
+     \caption*{$x_1$ }
+   \end{minipage}\hfill
+    \begin{minipage}{0.5\textwidth}
+     \centering
+     \includegraphics[width=1.1\textwidth]{grafici/x2_2.png}
+     \caption*{$x_2$}
+   \end{minipage}\hfill
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+     \includegraphics[width=0.6\textwidth]{grafici/x3_2.png}
+     \caption*{$y=x_3$}
+\end{figure}
+
 \end{document}
