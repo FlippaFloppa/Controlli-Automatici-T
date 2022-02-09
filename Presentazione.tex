@@ -66,15 +66,15 @@ con $\tau(t)$ ingresso libero ed inoltre velocità angolare $\omega(t)$ misurabi
 \begin{tabular}{||c | c ||} 
 
  \hline\hline
- $\beta_1$ & 0.3 \\ 
+ $\beta_1$ & $0.3$ \\ 
  \hline
- $\beta_2$& 0.1  \\
+ $\beta_2$ & $0.1$  \\
  \hline
- $m$ & 1 \\
+ $m$ & $1$ \\
  \hline
- $m$  & 1.5  \\
+ $m$  & $1.5$  \\
  \hline
- $\rho_e$  & 3\cdot 10^{7} \\ [2ex] 
+ $\rho_e $  & $3\cdot 10^{7}$ \\ [2ex] 
  \hline
 \end{tabular}
 \end{center}
@@ -300,6 +300,7 @@ Come si può notare dal grafico soprastante sono stati rispettati tutti i vincol
 \section{Test del sistema di controllo sul modello lineare}
 \SuspendCounters{subsection}
 \subsection{Funzioni di sensitività}
+<<<<<<< Updated upstream
 Rappresentazione della funzione di sensitività $S(jw)$, funzione di sensitività complementare $F(jw)$ e funzione di sensitività del controllo $Q(jw)$.
 
 Osservando $|F(s)| = 0$ per $\omega << \omega c $ e  $|F(s)| = |L(s)| $ per $\omega >> \omega c$ abbiamo la conferma che le funzioni siano corrette.
@@ -308,10 +309,28 @@ Osservando $|F(s)| = 0$ per $\omega << \omega c $ e  $|F(s)| = |L(s)| $ per $\om
 \includegraphics[width=1\textwidth]{grafici/fig10.png}
 \end{figure}
 
+=======
+Confrontando questo grafico con la funzione $L(jw)$ rappresentata nella \textit{Figura 4} possiamo controllare la correttezza delle funzioni di sensitività scritte:
+\begin{itemize}
+\item $S(jw)$ è corretta poiché $|S(jw)| = 1$ per $\omega > \omega c  $ e  $|S(jw)| = \frac{1}{|L(jw)|} $ per $\omega \leq \omega c $
+\item $F(jw)$ è corretta poiché $|F(jw)| = 1$ per $\omega \ll \omega c $ e  $|F(jw)| = |L(jw)| $ per $\omega \gg \omega c$
+\item $Q(jw)$ è corretta poiché $|Q(jw)| = \frac{1}{|G(jw)|}$ per $\omega \leq \omega c $ e  $|Q(jw)| = |R(jw)| $ per $\omega > \omega c$ (Questo lo si osserva tramite la \textit{Figura 2})
+>>>>>>> Stashed changes
 
+\end{itemize}
+
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{grafici/fig10.png}
+\end{figure}
 \ResumeSuspendedCounters{subsection}
+
+
+\newpage
 \subsection{Risposta al gradino}
 Data una funzione gradino $w(t)=8\cdot10{^-5}\cdot1(t)$ la risposta del sistema in anello chiuso rispetta i vincoli del tempo di assestamento e dell'errore a regime, come si può notare dalla figura.
+
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{grafici/fig4.png}
@@ -365,9 +384,8 @@ in forma non lineare utilizzando Simulink:
 \caption{\label{fig:orbit}Ricostruzione sistema non lineare}
 \end{figure}
 \pagebreak
-
-Abbiamo inoltre aggiunto l'ingresso in retroazione $y$, il regolatore $R$, i disturbi di uscita
-$d(t)$ e di misura $n(t)$ e il gradino $w(t)$.
+\noindent
+Abbiamo inoltre aggiunto l'ingresso in retroazione $y$, il regolatore $R$, i disturbi di uscita $d(t)$ e di misura $n(t)$ e il gradino $w(t)$.
 \begin{figure}[!h]
    \begin{minipage}{0.60\textwidth}
      \centering
@@ -430,5 +448,47 @@ Con l'introduzione dei disturbi si nota un notevole cambiamento nell'andamento d
      \includegraphics[width=0.6\textwidth]{grafici/x3_2.png}
      \caption*{$y=x_3$}
 \end{figure}
+<<<<<<< Updated upstream
 
 \end{document}
+=======
+\noindent
+Simulando per un per un intervallo più lungo abbiamo notato che anche $x_1$ si assesta ad un nuovo punto di equilibrio $\overline{x_{1e}}\simeq1.98955\cdot10^7$, evidenziando la robustezza del sistema anche se soggetto a disturbi.
+
+\begin{figure}[!h]
+    \centering
+     \includegraphics[width=0.6\textwidth]{grafici/x1_1_e.png}
+     \caption*{$\overline{x_{1e}}$}
+\end{figure}
+
+\subsection{Test con diverse ampiezze di gradino}
+\noindent
+Nel primo grafico è rappresentata l'uscita in presenza del gradino dato da specifica $W=8\cdot10^{-5}$, si nota come dopo poco tempo (0,05 s) il grafico si sia stabilizzato all'equilibrio.
+
+\begin{figure}[!h]
+    \centering
+     \includegraphics[width=0.75\textwidth]{grafici/gradino_W.png}
+     \caption*{$w(t)=W$}
+\end{figure}
+
+\noindent
+Lo stesso comportamento viene evidenziato dal grafico sottostante, dove abbiamo preso un'ampiezza del gradino di 3 ordini di grandezza superiore ($w(t)=W\cdot4\cdot10^3$), dimostrando la robustezza del sistema anche in seguito a grandi sollecitazioni.
+
+\begin{figure}[!h]
+    \centering
+     \includegraphics[width=0.75\textwidth]{grafici/grafico_W_4e3.png}
+     \caption*{$w(t)=W\cdot4\cdot10^3$}
+\end{figure}
+
+\newpage
+\noindent
+Il comportamento cambia quando l'ampiezza raggiunge valori dell'ordine di $W\cdot10^4$, infatti si notano dei picchi con $\dot{y}\longrightarrow-\infty$, fisicamente impossibili.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{grafici/grafico_W_1e4.png}
+    \caption*{$w(t)=W\cdot10^4$}
+\end{figure}
+
+\end{document}
+>>>>>>> Stashed changes

@@ -236,7 +236,7 @@ F=(R*G)/(1+R*G); %  Funzione di sensitività complementare
 Q=R/(1+R*G); %  Funzione di sensitività del controllo
 
 figure(10)
-hold on;
+hold on;grid on;
 legend(["S(j\omega)";"F(j\omega)"; "Q(j\omega)"]);
 margin(S,{bode_min,bode_max});
 margin(F,{bode_min,bode_max});
@@ -268,7 +268,7 @@ legend(Legend_step);
 
 figure(5);
 
-% Definizione intervallo
+%intervallo di campionamento
 tt = (0:1e-2:1e3);
 
 % calcolo disturbo di uscita
@@ -288,8 +288,9 @@ grid on
 legend('d','y_d')
 
 %% Check disturbo di misura
-
 figure(6);
+
+%intervallo di campionamento
 tt = (0:1e-6:1e-2);
 % calcolo disturbo di misura
 n=0;
